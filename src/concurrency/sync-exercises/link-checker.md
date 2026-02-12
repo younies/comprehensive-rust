@@ -18,7 +18,7 @@ Create a new Cargo project and `reqwest` it as a dependency with:
 ```shell
 cargo new link-checker
 cd link-checker
-cargo add --features blocking,rustls-tls reqwest
+cargo add --features blocking reqwest
 cargo add scraper
 cargo add thiserror
 ```
@@ -34,13 +34,13 @@ The `cargo add` calls will update the `Cargo.toml` file to look like this:
 [package]
 name = "link-checker"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 publish = false
 
 [dependencies]
-reqwest = { version = "0.11.12", features = ["blocking", "rustls-tls"] }
-scraper = "0.13.0"
-thiserror = "1.0.37"
+reqwest = { version = "0.13.1", features = ["blocking"] }
+scraper = "0.25.0"
+thiserror = "2.0.18"
 ```
 
 You can now download the start page. Try with a small site such as

@@ -31,17 +31,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0 # We need the full history for build.sh below.
+
+      - name: Update Rust
+        run: rustup update
 
       - name: Setup Rust cache
         uses: ./.github/workflows/setup-rust-cache
 
       - name: Install Gettext
-        run: |
-          sudo apt update
-          sudo apt install gettext
+        uses: ./.github/workflows/apt-get-install
+        with:
+          packages: gettext
 
       - name: Install mdbook
         uses: ./.github/workflows/install-mdbook
@@ -70,7 +73,7 @@ jobs:
         uses: actions/configure-pages@v5
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: book/html
 

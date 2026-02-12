@@ -1,4 +1,6 @@
 name: Test
+permissions:
+  contents: read
 
 on:
   pull_request:
@@ -11,36 +13,6 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  format:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install formatting dependencies
-        run: |
-          sudo apt update
-          sudo apt install gettext yapf3
-
-      - name: Install nightly rustfmt
-        run: |
-          rustup default nightly
-          rustup component add rustfmt
-
-      - name: Check formatting
-        uses: dprint/check@v2.2
-
-  typos:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Check for typos
-        uses: crate-ci/typos@v1.31.1
-        with:
-          config: ./.github/typos.toml
-
   cargo:
     strategy:
       matrix:
@@ -50,7 +22,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Update Rust
         run: rustup update
@@ -81,7 +53,7 @@ jobs:
             target: aarch64-unknown-none
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install toolchain
         run: |
@@ -92,9 +64,9 @@ jobs:
         uses: ./.github/workflows/setup-rust-cache
 
       - name: Install dependencies
-        run: |
-          sudo apt update
-          sudo apt install gcc-aarch64-linux-gnu
+        uses: ./.github/workflows/apt-get-install
+        with:
+          packages: gcc-aarch64-linux-gnu
 
       - name: Build Rust code
         working-directory: ${{ matrix.directory }}
@@ -106,7 +78,7 @@ jobs:
       languages: ${{ steps.find-languages.outputs.languages }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Find languages
         id: find-languages
@@ -131,7 +103,7 @@ jobs:
       LINK_CHECKED_LANGUAGES: '["en", "fa"]'
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0 # We need the full history for build.sh below.
 
@@ -143,10 +115,10 @@ jobs:
         with:
           key: ${{ contains(fromJSON(env.LINK_CHECKED_LANGUAGES), matrix.language) }}
 
-      - name: Install Gettext
-        run: |
-          sudo apt update
-          sudo apt install gettext
+      - name: Install dependencies
+        uses: ./.github/workflows/apt-get-install
+        with:
+          packages: gettext
 
       - name: Install mdbook
         uses: ./.github/workflows/install-mdbook
@@ -161,17 +133,13 @@ jobs:
           MDBOOK_OUTPUT='{"xgettext": {"pot-file": "messages.pot"}}' mdbook build -d po
           msgfmt -o /dev/null --statistics po/messages.pot
 
-      - name: Install mdbook-linkcheck
-        if: contains(fromJSON(env.LINK_CHECKED_LANGUAGES), matrix.language)
-        run: cargo install mdbook-linkcheck --locked --version 0.7.7
-
       - name: Build ${{ matrix.language }} translation
         run: |
           .github/workflows/build.sh ${{ matrix.language }} book/comprehensive-rust-${{ matrix.language }}
 
       # Upload the book now to retain it in case mdbook test fails.
       - name: Upload book
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: comprehensive-rust-${{ matrix.language }}
           path: book/
@@ -181,30 +149,40 @@ jobs:
           MDBOOK_BOOK__LANGUAGE: ${{ matrix.language }}
         run: mdbook test
 
+  web-tests:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 18
+          node-version: 22
+          cache: "npm"
+          cache-dependency-path: "tests/package-lock.json"
       - name: Install test framework
         run: npm install
         working-directory: ./tests
+      - name: Download english book
+        uses: actions/download-artifact@v7
+        with:
+          name: comprehensive-rust-en
+          path: book/
       - name: Test Javascript
-        if: matrix.language == 'en'
-        run: |
-          ./src/slides/create-slide.list.sh
-          npm test
-        env:
-          TEST_BOOK_DIR: ../book/comprehensive-rust-${{ matrix.language }}/html
-        working-directory: ./tests
+        run: cargo xtask web-tests --dir book/comprehensive-rust-en/html
 
   po-diff:
     name: Translation diff
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
+
+      - name: Update Rust
+        run: rustup update
 
       - name: Setup Rust cache
         uses: ./.github/workflows/setup-rust-cache

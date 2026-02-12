@@ -14,7 +14,6 @@ fn main() {
     println!("a: {a:?}");
 
     let s: &[i32] = &a[2..4];
-
     println!("s: {s:?}");
 }
 ```
@@ -45,10 +44,10 @@ fn main() {
 - You can't "grow" a slice once it's created:
   - You can't append elements of the slice, since it doesn't own the backing
     buffer.
-  - You can't grow a slice to point to a larger section of the backing buffer.
-    The slice loses information about the underlying buffer and so you can't
-    know how larger the slice can be grown.
-  - To get a larger slice you have to back to the original buffer and create a
-    larger slice from there.
+  - You can't grow a slice to point to a larger section of the backing buffer. A
+    slice does not have information about the length of the underlying buffer
+    and so you can't know how large the slice can be grown.
+  - To get a larger slice you have to go back to the original buffer and create
+    a larger slice from there.
 
 </details>

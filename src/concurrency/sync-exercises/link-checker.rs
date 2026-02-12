@@ -13,12 +13,12 @@
 // limitations under the License.
 
 // ANCHOR: solution
-use std::sync::{mpsc, Arc, Mutex};
+use std::sync::{Arc, Mutex, mpsc};
 use std::thread;
 
 // ANCHOR: setup
-use reqwest::blocking::Client;
 use reqwest::Url;
+use reqwest::blocking::Client;
 use scraper::{Html, Selector};
 use thiserror::Error;
 
@@ -50,7 +50,7 @@ fn visit_page(client: &Client, command: &CrawlCommand) -> Result<Vec<Url>, Error
         return Ok(link_urls);
     }
 
-    let base_url = response.url().to_owned();
+    let base_url = response.url().clone();
     let body_text = response.text()?;
     let document = Html::parse_document(&body_text);
 
@@ -86,10 +86,7 @@ impl CrawlState {
 
     /// Determine whether links within the given page should be extracted.
     fn should_extract_links(&self, url: &Url) -> bool {
-        let Some(url_domain) = url.domain() else {
-            return false;
-        };
-        url_domain == self.domain
+        url.domain().is_some_and(|d| d == self.domain)
     }
 
     /// Mark the given page as visited, returning false if it had already
@@ -100,16 +97,18 @@ impl CrawlState {
 }
 
 type CrawlResult = Result<Vec<Url>, (Url, Error)>;
+
 fn spawn_crawler_threads(
     command_receiver: mpsc::Receiver<CrawlCommand>,
     result_sender: mpsc::Sender<CrawlResult>,
     thread_count: u32,
 ) {
+    // To multiplex the non-cloneable Receiver, wrap it in Arc<Mutex<_>>.
     let command_receiver = Arc::new(Mutex::new(command_receiver));
 
     for _ in 0..thread_count {
         let result_sender = result_sender.clone();
-        let command_receiver = command_receiver.clone();
+        let command_receiver = Arc::clone(&command_receiver);
         thread::spawn(move || {
             let client = Client::new();
             loop {
@@ -160,7 +159,6 @@ fn control_crawl(
             Err((url, error)) => {
                 bad_urls.push(url);
                 println!("Got crawling error: {:#}", error);
-                continue;
             }
         }
     }

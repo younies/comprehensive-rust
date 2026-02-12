@@ -46,7 +46,7 @@ fn main() {
 <details>
 
 - This slide demonstrates how privacy in structs is module-based. Students
-  coming from object oriented languages may be used to types being the
+  coming from object-oriented languages may be used to types being the
   encapsulation boundary, so this demonstrates how Rust behaves differently
   while showing how we can still achieve encapsulation.
 
@@ -75,4 +75,4 @@ fn main() {
 
 </details>
 
-[1]: https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=3e61f43c88de12bcdf69c1d6df9ab3da
+[1]: https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&gist=3e61f43c88de12bcdf69c1d6df9ab3da

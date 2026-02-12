@@ -4,24 +4,28 @@ minutes: 10
 
 # Closure traits
 
-Closures or lambda expressions have types which cannot be named. However, they
+Closures or lambda expressions have types that cannot be named. However, they
 implement special [`Fn`](https://doc.rust-lang.org/std/ops/trait.Fn.html),
 [`FnMut`](https://doc.rust-lang.org/std/ops/trait.FnMut.html), and
 [`FnOnce`](https://doc.rust-lang.org/std/ops/trait.FnOnce.html) traits:
 
-The special type `fn` refers to function pointers - either the address of a
-function, or a closure that captures nothing.
+The special types `fn(..) -> T` refer to function pointers - either the address
+of a function, or a closure that captures nothing.
 
 ```rust,editable
-fn apply_and_log(func: impl FnOnce(String) -> String, func_name: &str, input: &str) {
-    println!("Calling {func_name}({input}): {}", func(input.to_string()))
+fn apply_and_log(
+    func: impl FnOnce(&'static str) -> String,
+    func_name: &'static str,
+    input: &'static str,
+) {
+    println!("Calling {func_name}({input}): {}", func(input))
 }
 
 fn main() {
     let suffix = "-itis";
     let add_suffix = |x| format!("{x}{suffix}");
     apply_and_log(&add_suffix, "add_suffix", "senior");
-    apply_and_log(&add_suffix, "add_suffix", "appenix");
+    apply_and_log(&add_suffix, "add_suffix", "appendix");
 
     let mut v = Vec::new();
     let mut accumulate = |x| {
@@ -32,9 +36,10 @@ fn main() {
     apply_and_log(&mut accumulate, "accumulate", "green");
     apply_and_log(&mut accumulate, "accumulate", "blue");
 
-    let take_and_reverse = |mut prefix: String| {
-        prefix.push_str(&v.into_iter().rev().collect::<Vec<_>>().join("/"));
-        prefix
+    let take_and_reverse = |prefix| {
+        let mut acc = String::from(prefix);
+        acc.push_str(&v.into_iter().rev().collect::<Vec<_>>().join("/"));
+        acc
     };
     apply_and_log(take_and_reverse, "take_and_reverse", "reversed: ");
 }
@@ -62,7 +67,7 @@ can (i.e. you call it once), or `FnMut` else, and last `Fn`. This allows the
 most flexibility for the caller.
 
 In contrast, when you have a closure, the most flexible you can have is `Fn`
-(which can be passed to a consumer of any of the 3 closure traits), then
+(which can be passed to a consumer of any of the three closure traits), then
 `FnMut`, and lastly `FnOnce`.
 
 The compiler also infers `Copy` (e.g. for `add_suffix`) and `Clone` (e.g.

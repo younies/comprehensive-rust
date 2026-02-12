@@ -29,11 +29,11 @@ rule. For a given value, at any time:
 
 ```rust,editable,compile_fail
 fn main() {
-    let mut a: i32 = 10;
-    let b: &i32 = &a;
+    let mut a = 10;
+    let b = &a;
 
     {
-        let c: &mut i32 = &mut a;
+        let c = &mut a;
         *c = 20;
     }
 
@@ -65,9 +65,9 @@ fn main() {
 
 ## More to Explore
 
-- Technically multiple mutable references to a piece of data can exist at the
+- Technically, multiple mutable references to a piece of data can exist at the
   same time via re-borrowing. This is what allows you to pass a mutable
-  reference into a function without invaliding the original reference.
+  reference into a function without invalidating the original reference.
   [This playground example][1] demonstrates that behavior.
 - Rust uses the exclusive reference constraint to ensure that data races do not
   occur in multi-threaded code, since only one thread can have mutable access to
@@ -82,5 +82,5 @@ fn main() {
 
 </details>
 
-[1]: https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=8f5896878611566845fe3b0f4dc5af68
-[2]: https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=f293a31f2d4d0d31770486247c2e8437
+[1]: https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&gist=8f5896878611566845fe3b0f4dc5af68
+[2]: https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&gist=f293a31f2d4d0d31770486247c2e8437

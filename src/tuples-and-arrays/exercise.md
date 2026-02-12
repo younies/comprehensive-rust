@@ -12,8 +12,8 @@ let array = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
 
 What is the type of this variable?
 
-Use an array such as the above to write a function `transpose` which will
-transpose a matrix (turn rows into columns):
+Use an array such as the above to write a function `transpose` that transposes a
+matrix (turns rows into columns):
 
 <!-- mdbook-xgettext: skip -->
 
@@ -24,7 +24,7 @@ transpose a matrix (turn rows into columns):
 ```
 
 Copy the code below to <https://play.rust-lang.org/> and implement the function.
-This function only operates on 3x3 matrices.
+This function only operates on 3×3 matrices.
 
 ```rust,should_panic,editable
 {{#include exercise.rs:transpose}}

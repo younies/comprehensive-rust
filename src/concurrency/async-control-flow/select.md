@@ -17,7 +17,7 @@ the resulting variables. The `statement` result becomes the result of the
 
 ```rust,editable,compile_fail
 use tokio::sync::mpsc;
-use tokio::time::{sleep, Duration};
+use tokio::time::{Duration, sleep};
 
 #[tokio::main]
 async fn main() {
@@ -41,8 +41,8 @@ async fn main() {
   or for a timeout. Change the `sleep` to sleep longer to see it fail. Why does
   the `send` also fail in this situation?
 
-- `select!` is also often used in a loop in "actor" architectures, where a task
-  reacts to events in a loop. That has some pitfalls, which will be discussed in
-  the next segment.
+- `select!` is also frequently used in a loop in "actor" architectures, where a
+  task reacts to events in a loop. That has some pitfalls, which will be
+  discussed in the next segment.
 
 </details>

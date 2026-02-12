@@ -16,18 +16,19 @@
 #![no_main]
 #![no_std]
 
+mod asm;
 mod exceptions;
-mod pl011;
+mod pl011_struct;
 
-use crate::pl011::Uart;
+use crate::pl011_struct::Uart;
 use core::fmt::Write;
 use core::panic::PanicInfo;
 use log::error;
-use smccc::psci::system_off;
 use smccc::Hvc;
+use smccc::psci::system_off;
 
 /// Base address of the primary PL011 UART.
-const PL011_BASE_ADDRESS: *mut u32 = 0x900_0000 as _;
+const PL011_BASE_ADDRESS: *mut pl011_struct::Registers = 0x900_0000 as _;
 
 // SAFETY: There is no other global function of this name.
 #[unsafe(no_mangle)]

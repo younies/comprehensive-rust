@@ -14,8 +14,8 @@
 
 // ANCHOR: solution
 // ANCHOR: setup
-use futures_util::stream::StreamExt;
 use futures_util::SinkExt;
+use futures_util::stream::StreamExt;
 use http::Uri;
 use tokio::io::{AsyncBufReadExt, BufReader};
 use tokio_websockets::{ClientBuilder, Message};
@@ -41,7 +41,7 @@ async fn main() -> Result<(), tokio_websockets::Error> {
                             println!("From server: {}", text);
                         }
                     },
-                    Some(Err(err)) => return Err(err.into()),
+                    Some(Err(err)) => return Err(err),
                     None => return Ok(()),
                 }
             }

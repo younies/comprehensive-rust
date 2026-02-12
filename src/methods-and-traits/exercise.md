@@ -5,7 +5,7 @@ minutes: 15
 # Exercise: Logger Trait
 
 Let's design a simple logging utility, using a trait `Logger` with a `log`
-method. Code which might log its progress can then take an `&impl Logger`. In
+method. Code that might log its progress can then take an `&impl Logger`. In
 testing, this might put messages in the test logfile, while in a production
 build it would send messages to a log server.
 
@@ -15,8 +15,7 @@ messages above a maximum verbosity.
 
 This is a common pattern: a struct wrapping a trait implementation and
 implementing that same trait, adding behavior in the process. In the "Generics"
-segment this afternoon, we will see how to make the wrapper generic over the
-wrapped type.
+segment, we will see how to make the wrapper generic over the wrapped type.
 
 ```rust,compile_fail,editable
 {{#include exercise.rs:setup}}

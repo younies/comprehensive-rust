@@ -3,16 +3,18 @@
 [package]
 name = "rtc"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 publish = false
 
 [dependencies]
-arm-gic = "0.2.2"
-bitflags = "2.9.0"
-chrono = { version = "0.4.40", default-features = false }
-log = "0.4.27"
-smccc = "0.2.0"
+aarch64-paging = { version = "0.11.0", default-features = false }
+aarch64-rt = "0.4.2"
+arm-gic = "0.7.1"
+arm-pl011-uart = "0.4.0"
+bitflags = "2.10.0"
+chrono = { version = "0.4.43", default-features = false }
+log = "0.4.29"
+safe-mmio = "0.2.7"
+smccc = "0.2.2"
 spin = "0.10.0"
-
-[build-dependencies]
-cc = "1.2.17"
+zerocopy = "0.8.37"
